@@ -1,4 +1,4 @@
-proyecto-comida-boliviana/
+Proy/
 │
 ├── dataset_imagenes/
 │      ├── silpancho/
