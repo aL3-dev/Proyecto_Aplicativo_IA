@@ -1,140 +1,158 @@
-# Identificación Nutricional e Ingredientes de Platos Bolivianos
+# Sistema de Reconocimiento de Comidas Típicas Bolivianas
 
-Este proyecto implementa un sistema integral de aprendizaje supervisado que permite tomar una foto de un plato boliviano y obtener: identificación del plato, lista de ingredientes detectados y valor nutricional estimado.
+Este proyecto implementa un sistema de visión por computadora que puede identificar comidas típicas bolivianas a partir de imágenes y proporcionar información sobre sus ingredientes y valores nutricionales.
 
-## Descripción General
+## Descripción del Proyecto
 
-El sistema completo consta de:
-1. **Identificación Visual de Platos**: Reconoce platos bolivianos a partir de imágenes
-2. **Detección de Ingredientes**: Identifica los ingredientes presentes en el plato
-3. **Estimación Nutricional**: Calcula valores nutricionales basados en los ingredientes detectados
-4. **Clasificación Nutricional**: Categoriza el plato según su perfil nutricional (alto/medio/bajo en proteínas, carbohidratos, grasas, calorías)
+El sistema consta de:
+
+1. **Modelo de visión por computadora**: Entrenado para reconocer 27 comidas típicas bolivianas
+2. **Base de datos de ingredientes**: Información sobre los ingredientes de cada plato
+3. **Base de datos nutricional**: Información sobre calorías, proteínas, carbohidratos y grasas
 
 ## Estructura del Proyecto
 
 ```
-Proy/
-│
-├── dataset_imagenes/
-│      ├── Aji_de_pataskha/
-│      ├── caldo_de_bagre/
-│      ├── Cazuelas/
-│      └── ...
-│
-├── dataset_ingredientes.csv          # Información de ingredientes por plato
-├── config.json                      # Configuración del proyecto
-├── proyecto.md                      # Documentación del proyecto
-├── estructura.txt                   # Estructura del proyecto
-│
+├── dataset_ingredientes.csv            # Lista de ingredientes por plato
 ├── nutricion/
-│      ├── datos_nutricionales.csv   # Información nutricional por plato
-│      └── modelo_nutricion.ipynb    # Notebook para clasificación nutricional
-│
-├── ingredientes_vision/
-│      ├── modelo_vision_ingredientes.ipynb  # Notebook para identificación por imagen
-│      └── ingredientes_labels.json          # Etiquetas de ingredientes
-│
-├── utils/
-│      ├── preprocesamiento.py       # Funciones de preprocesamiento
-│      └── cargar_datos.py           # Funciones para carga de datos
-│
-├── P/
-│      └── main.py                   # Script principal de ejemplo
-│
-├── aplicacion_integral.py           # Aplicación que integra todos componentes
-├── sistema_integral.py              # Sistema completo: imagen -> plato -> ingredientes -> nutrición
-├── test_funcionalidad.py            # Script de verificación de funcionalidad
-├── requirements.txt                 # Dependencias del proyecto
-├── DOCUMENTACION.md                 # Documentación técnica detallada
-└── INICIO_RAPIDO.md                 # Guía de inicio rápido
-
+│   └── datos_nutricionales.csv         # Información nutricional por plato
+├── dataset_imagenes/                  # Imágenes organizadas por carpetas
+│   ├── Aji_de_pataskha/
+│   ├── caldo_de_bagre/
+│   ├── ...
+├── sistema_completo_pytorch.py        # Script principal del sistema (PyTorch)
+├── entrenar_modelo_pytorch.py         # Script para entrenar el modelo (PyTorch)
+├── predecir_plato_pytorch.py          # Script para predecir platos (PyTorch)
+├── sistema_completo.py                # Versión original con TensorFlow
+├── entrenar_modelo.py                 # Versión original con TensorFlow
+├── predecir_plato.py                  # Versión original con TensorFlow
+└── verificar_concordancia.py          # Script para verificar nombres
 ```
 
-## Requisitos
+## Instalación de Dependencias
 
-- Python 3.7+
-- pandas
-- numpy
-- matplotlib
-- seaborn
-- scikit-learn
-- tensorflow
-- opencv-python
+Para ejecutar este proyecto con PyTorch, necesitas instalar las siguientes bibliotecas Python:
 
-## Instalación
-
-1. Clonar o descargar el repositorio
-2. Instalar dependencias:
 ```bash
-pip install -r requirements.txt
+pip install torch torchvision torchaudio pandas numpy matplotlib pillow scikit-learn tqdm
 ```
 
-## Uso
-
-### Sistema Integral Completo (Recomendado)
-
-Ejecutar el sistema completo que toma una imagen y devuelve todo el análisis:
+Si prefieres usar la versión original con TensorFlow:
 ```bash
-python sistema_integral.py
+pip install tensorflow pandas numpy matplotlib pillow scikit-learn
 ```
 
-O usarlo programáticamente:
-```python
-from sistema_integral import SistemaIdentificacionPlatos
+## Uso del Sistema (PyTorch)
 
-sistema = SistemaIdentificacionPlatos()
-resultado = sistema.analyze_plate_image('ruta/a/imagen.jpg')
-sistema.print_results(resultado)
+### 1. Entrenamiento del Modelo
+
+Ejecuta el script principal para entrenar el modelo con PyTorch:
+
+```bash
+python sistema_completo_pytorch.py
 ```
 
-### Componentes Individuales
+O directamente:
+```bash
+python entrenar_modelo_pytorch.py
+```
 
-#### Clasificación Nutricional
-Ejecutar el notebook `nutricion/modelo_nutricion.ipynb` para entrenar el modelo de clasificación nutricional.
+Selecciona la opción 1 para entrenar el modelo. El proceso incluirá:
+- Preprocesamiento de imágenes
+- Entrenamiento con transfer learning usando ResNet50
+- Validación y selección del mejor modelo
+- Guardado del modelo entrenado
 
-#### Identificación de Ingredientes
-Ejecutar el notebook `ingredientes_vision/modelo_vision_ingredientes.ipynb` para entrenar el modelo de identificación de ingredientes.
+### 2. Clasificación de Imágenes
 
-#### Script Principal
-Ejecutar `P/main.py` para ver un ejemplo básico de cómo usar las funciones de carga y preprocesamiento de datos.
+Después del entrenamiento, selecciona la opción 2 para clasificar una imagen:
+- Carga una imagen de un plato boliviano
+- El modelo identificará el plato y mostrará:
+  - Nombre del plato con su nivel de confianza
+  - Lista de ingredientes
+  - Información nutricional (calorías, proteínas, carbohidratos, grasas)
 
-## Funcionalidad Principal
+## Detalles Técnicos (PyTorch)
 
-El sistema está diseñado para funcionar como una aplicación de "Food Recognition" completa:
+### Arquitectura del Modelo
 
-1. **Toma de Foto**: El usuario toma una foto de un plato boliviano
-2. **Identificación Visual**: El sistema procesa la imagen para detectar ingredientes visibles
-3. **Reconocimiento de Plato**: Basado en los ingredientes detectados, identifica el plato más probable
-4. **Análisis Nutricional**: Calcula el valor nutricional estimado del plato
-5. **Clasificación**: Categoriza el plato según su perfil nutricional
+- Base: ResNet50 pre-entrenado en ImageNet
+- Capas adicionales para clasificación específica
+- Transfer learning con capas congeladas inicialmente
+- Fine-tuning con capas descongeladas en etapas posteriores
 
-## Componentes Principales
+### Preprocesamiento de Imágenes
 
-### Carga de Datos (`utils/cargar_datos.py`)
-Funciones para cargar y combinar datasets de ingredientes y nutrición.
+- Tamaño estándar: 224x224 píxeles
+- Normalización con valores ImageNet: mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+- Data augmentation durante el entrenamiento:
+  - Rotación aleatoria
+  - Volteo horizontal
+  - Ajuste de color (brightness, contrast, saturation)
+  - Jitter de color
 
-### Preprocesamiento (`utils/preprocesamiento.py`)
-Funciones para procesar texto de ingredientes, crear categorías nutricionales y preparar datos para el modelado.
+### Manejo de Nombres Inconsistentes
 
-### Sistema Integral (`sistema_integral.py`)
-Aplicación completa que integra todos los componentes para el flujo: imagen -> plato -> ingredientes -> nutrición.
+El sistema incluye un mecanismo para resolver discrepancias entre los nombres de los platos en los archivos CSV y las carpetas de imágenes.
 
-### Clasificación Nutricional (`nutricion/modelo_nutricion.ipynb`)
-Modelo basado en redes neuronales que clasifica platos según contenido nutricional.
+## Platos Soportados
 
-### Identificación de Ingredientes (`ingredientes_vision/modelo_vision_ingredientes.ipynb`)
-Modelo de visión por computadora que identifica ingredientes a partir de imágenes usando transfer learning.
+El sistema puede reconocer los siguientes 27 platos:
 
-## Conjuntos de Datos
+1. Aji de Pataskha
+2. Caldo de Bagre
+3. Cazuela
+4. Chairo
+5. Charquekan Orureño
+6. Chicharrón
+7. Chorizos
+8. Cunape
+9. Empanada de Arroz
+10. Falso Conejo
+11. Fricase
+12. Fritanga
+13. Karapecho
+14. Keperi Beniano
+15. La Kalapurka
+16. Locro
+17. Majao
+18. Mondongo Chuquisaqueño
+19. Pacu Frito
+20. Pejerrey
+21. Picana
+22. Picante de Pollo
+23. Pique Macho
+24. Ranga
+25. Saice
+26. Silpancho
+27. Sopa de Maní
+28. Sopa de Quinua
 
-- `dataset_ingredientes.csv`: Contiene platos con sus ingredientes en formato de texto.
-- `nutricion/datos_nutricionales.csv`: Contiene valores nutricionales (calorías, proteínas, carbohidratos, grasas) por plato.
-- `dataset_imagenes/`: Directorio con imágenes de los platos organizados por categoría.
+## Ejemplo de Funcionamiento
 
-## Contribución
+**Entrada**: Imagen de Aji de Pataskha
+**Procesamiento**:
+- Sistema identifica: "Aji de Pataskha" con 95% de confianza
+- Recupera ingredientes: carne de res, maíz pelado, cabeza de cerdo, cebolla blanca, cebolla verde, apio, comino
+- Recupera valores nutricionales: calorias = 480, proteina = 32, carbohidratos = 38, grasa = 22
+**Salida**: Muestra nombre del plato, ingredientes y valores nutricionales
 
-Las contribuciones son bienvenidas. Siéntase libre de enviar un pull request o abrir un issue para discutir cambios.
+## Archivos Generados
 
-## Licencia
+Después del entrenamiento con PyTorch, se generan los siguientes archivos:
+- `modelo_completo.pth`: Modelo entrenado completo
+- `mejor_modelo.pth`: Mejor modelo según métricas de validación
+- `historial_entrenamiento.pkl`: Historial del entrenamiento
+- `graficas_entrenamiento.png`: Gráficas de precisión y pérdida
 
-Este proyecto está licenciado bajo los términos descritos por el autor.
+## Comparación TensorFlow vs PyTorch
+
+Este proyecto ofrece dos implementaciones:
+- **PyTorch**: Más flexible y moderno, ideal para investigación y desarrollo
+- **TensorFlow**: Más estable para despliegue en producción
+
+Ambas implementaciones tienen la misma funcionalidad y objetivos.
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Para cambios mayores, por favor abre un issue primero para discutir qué te gustaría cambiar.
